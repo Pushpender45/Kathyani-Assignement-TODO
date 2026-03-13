@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import TaskCard from '../components/TaskCard';
 import AddTaskModal from '../components/AddTaskModal';
+import ConfirmModal from '../components/ConfirmModal';
 import { getTasks, createTask, updateTask, deleteTask } from '../services/api';
 import toast from 'react-hot-toast';
 import { HiOutlinePlus, HiOutlineClipboardList } from 'react-icons/hi';
@@ -18,6 +19,7 @@ const DashboardPage = () => {
   const [filter, setFilter] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [taskToDelete, setTaskToDelete] = useState(null);
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -54,13 +56,16 @@ const DashboardPage = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const confirmDelete = async () => {
+    if (!taskToDelete) return;
     try {
-      await deleteTask(id);
+      await deleteTask(taskToDelete);
       toast.success('Task deleted');
       fetchTasks();
     } catch {
       toast.error('Failed to delete task');
+    } finally {
+      setTaskToDelete(null);
     }
   };
 
@@ -140,7 +145,7 @@ const DashboardPage = () => {
                 key={task._id}
                 task={task}
                 onToggle={handleToggle}
-                onDelete={handleDelete}
+                onDelete={(id) => setTaskToDelete(id)}
               />
             ))
           )}
@@ -148,6 +153,14 @@ const DashboardPage = () => {
       </main>
 
       <AddTaskModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onAdd={handleAdd} />
+      
+      <ConfirmModal
+        isOpen={!!taskToDelete}
+        onClose={() => setTaskToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Delete Task"
+        message="Are you sure you want to delete this task? This action cannot be undone."
+      />
     </div>
   );
 };
