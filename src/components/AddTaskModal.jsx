@@ -16,7 +16,9 @@ const customSelectStyles = {
     backgroundColor: 'var(--bg-input)',
     borderColor: 'var(--border)',
     color: 'var(--text-primary)',
-    padding: '2px',
+    padding: '3px',
+    minHeight: '48px',
+    borderRadius: 'var(--radius-sm)',
     boxShadow: 'none',
     '&:hover': {
       borderColor: 'var(--border-focus)'

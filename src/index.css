@@ -920,6 +920,10 @@ body {
   resize: none;
 }
 
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus,
