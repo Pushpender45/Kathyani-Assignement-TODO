@@ -1,10 +1,12 @@
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
-import { HiOutlineLogout, HiOutlineUser } from 'react-icons/hi';
+import { HiOutlineLogout, HiOutlineUser, HiMoon, HiSun } from 'react-icons/hi';
 import { PiLeafFill } from 'react-icons/pi';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,6 +24,14 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-user">
+        <button
+          className="theme-toggle"
+          onClick={toggleTheme}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? <HiSun /> : <HiMoon />}
+        </button>
+
         <div className="user-badge">
           <HiOutlineUser />
           <span>{user?.name}</span>

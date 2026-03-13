@@ -1,12 +1,52 @@
 import { useState } from 'react';
 import { HiOutlineX } from 'react-icons/hi';
+import Select from 'react-select';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
+const priorityOptions = [
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'High' }
+];
+
+const customSelectStyles = {
+  control: (provided) => ({
+    ...provided,
+    backgroundColor: 'var(--bg-input)',
+    borderColor: 'var(--border)',
+    color: 'var(--text-primary)',
+    padding: '2px',
+    boxShadow: 'none',
+    '&:hover': {
+      borderColor: 'var(--border-focus)'
+    }
+  }),
+  menu: (provided) => ({
+    ...provided,
+    backgroundColor: 'var(--bg-card)',
+    border: '1px solid var(--border)',
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isFocused ? 'var(--primary-glow)' : 'transparent',
+    color: 'var(--text-primary)',
+    '&:hover': {
+      backgroundColor: 'var(--primary-glow)'
+    }
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: 'var(--text-primary)'
+  })
+};
 
 const AddTaskModal = ({ isOpen, onClose, onAdd }) => {
   const [form, setForm] = useState({
     title: '',
     description: '',
-    priority: 'medium',
-    dueDate: '',
+    priority: priorityOptions[1], // select option object
+    dueDate: null,
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -17,9 +57,10 @@ const AddTaskModal = ({ isOpen, onClose, onAdd }) => {
     setSubmitting(true);
     await onAdd({
       ...form,
-      dueDate: form.dueDate || null,
+      priority: form.priority.value,
+      dueDate: form.dueDate ? form.dueDate.toISOString() : null,
     });
-    setForm({ title: '', description: '', priority: 'medium', dueDate: '' });
+    setForm({ title: '', description: '', priority: priorityOptions[1], dueDate: null });
     setSubmitting(false);
     onClose();
   };
@@ -61,25 +102,24 @@ const AddTaskModal = ({ isOpen, onClose, onAdd }) => {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="task-priority">Priority</label>
-              <select
-                id="task-priority"
+              <label>Priority</label>
+              <Select
                 value={form.priority}
-                onChange={(e) => setForm({ ...form, priority: e.target.value })}
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
+                onChange={(option) => setForm({ ...form, priority: option })}
+                options={priorityOptions}
+                styles={customSelectStyles}
+                isSearchable={false}
+              />
             </div>
 
             <div className="form-group">
-              <label htmlFor="task-due">Due Date</label>
-              <input
-                id="task-due"
-                type="date"
-                value={form.dueDate}
-                onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+              <label>Due Date</label>
+              <DatePicker
+                selected={form.dueDate}
+                onChange={(date) => setForm({ ...form, dueDate: date })}
+                placeholderText="Select due date"
+                className="custom-datepicker-input"
+                minDate={new Date()}
               />
             </div>
           </div>
